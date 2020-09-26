@@ -1,0 +1,5 @@
+https://realpython.com/build-recommendation-engine-collaborative-filtering/
+https://bibliothequer.com/education/machine-learning-in-recommendations-systems/
+https://codeburst.io/explanation-of-recommender-systems-in-information-retrieval-13077e1d916c yet to read
+https://www.youtube.com/watch?v=3ecNC-So0r4
+https://medium.com/sfu-cspmp/recommendation-systems-user-based-collaborative-filtering-using-n-nearest-neighbors-bf7361dc24e0 # user based collaborative filtering guide

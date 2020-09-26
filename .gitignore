@@ -1,1 +1,7 @@
-.ipynb
+*.ipynb
+.gitignore.swo
+.gitignore.swp
+.idea
+__pycache__/
+data-unused/
+data/
