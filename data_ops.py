@@ -1,5 +1,10 @@
 from scipy import spatial
-from data_load import DataLoader
+#from data_load import DataLoader
+import numpy as np
+
+MAX = 1.0
+MIN = -1.0
+lol = 1
 
 
 def cosine_similarities(sample, df):
@@ -12,14 +17,46 @@ def cosine_similarities(sample, df):
     :param df:     pd dataframe of user-rating cartesian product, each row corresponds to a user, mean normalized
     :return:       pd series of cosine similarity scores, sorted (most similar first)
     """
-    # cosine distance increases as the angle increases, so therefore we subtract it from 1
-    similar_score = df.apply(lambda row: 1 - spatial.distance.cosine(sample, row), axis=1)
-    return similar_score.sort_values(ascending=False)
+    if (sample == 0).all():
+        # our sample is a zero vector, and is similar only to zero rows (if any)
+        similar_score = df.apply(lambda row : MAX if (row == 0).all() else MIN)
+    else:
+        similar_score = df.apply(lambda row : MAX - spatial.distance.cosine(sample, row), axis=1)
+    return similar_score.sort_values(ascending=False, na_position="last")
 
 
-if __name__ == "__main__":
-    df = DataLoader().construct()
-    sample = df.iloc[0]
-    sim = cosine_similarities(sample, df)
-    sim_head = sim.iloc[:10]
-    print(sim_head)
+def _safe_cosine_similar_score(x, y):
+    """
+    TODO write
+
+    :param x: sample vector, NOT a zero vector
+    :param y: row vector
+    :return:
+    """
+    if (y == 0).all():
+        return MIN
+    # cosine distance increases as the angle increases, so therefore we subtract it from MAX
+    return MAX - spatial.distance.cosine(x, y)
+
+
+def std_normalize(vector):
+    """
+    Standard normalizing.
+
+    :param vector:
+    :return:
+    """
+    new_vector = vector - vector.mean()
+    std = vector.std()
+    if std != 0:
+        new_vector = new_vector / std
+    return new_vector
+
+
+# if __name__ == "__main__":
+#     df = DataLoader().construct()
+#     # sample = df.iloc[0]
+#     sample = np.zeros(df.shape[1])
+#     sim = cosine_similarities(sample, df)
+#     sim_head = sim.iloc[:10]
+#     print(sim_head)
