@@ -25,38 +25,15 @@ def cosine_similarities(sample, df):
     return similar_score.sort_values(ascending=False, na_position="last")
 
 
-def _safe_cosine_similar_score(x, y):
+def standardize(vector):
     """
-    TODO write
-
-    :param x: sample vector, NOT a zero vector
-    :param y: row vector
-    :return:
-    """
-    if (y == 0).all():
-        return MIN
-    # cosine distance increases as the angle increases, so therefore we subtract it from MAX
-    return MAX - spatial.distance.cosine(x, y)
-
-
-def std_normalize(vector):
-    """
-    Standard normalizing.
+    Standardize vector: z = vector - mean / std
 
     :param vector:
-    :return:
+    :return: standardized vector z
     """
-    new_vector = vector - vector.mean()
+    z = vector - vector.mean()
     std = vector.std()
     if std != 0:
-        new_vector = new_vector / std
-    return new_vector
-
-
-# if __name__ == "__main__":
-#     df = DataLoader().construct()
-#     # sample = df.iloc[0]
-#     sample = np.zeros(df.shape[1])
-#     sim = cosine_similarities(sample, df)
-#     sim_head = sim.iloc[:10]
-#     print(sim_head)
+        z = z / std
+    return z

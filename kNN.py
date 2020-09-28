@@ -8,7 +8,7 @@ class UnsupervisedNearestNeighbors:
     def __init__(self, k_neighbors):
         self.k_neighbors = k_neighbors
         self.X = None                  # pandas df
-        self.column_labels = None
+        #self.column_labels = None
 
     def fit(self, X):
         """
@@ -18,7 +18,7 @@ class UnsupervisedNearestNeighbors:
         :return:
         """
         self.X = X
-        self.column_labels = X.columns
+        #self.column_labels = X.columns
 
     def predict(self, samples):
         """
@@ -27,9 +27,12 @@ class UnsupervisedNearestNeighbors:
         :param samples: pandas df
         :return: numpy array
         """
-        return np.array([self.predict_single(sample) for index, sample in samples.iterrows()])
+        if samples.ndim == 1:
+            return self.__predict_single(samples)
+        else:
+            return np.array([self.__predict_single(sample) for _, sample in samples.iterrows()])
 
-    def predict_single(self, sample):
+    def __predict_single(self, sample):
         """
         TODO write
 
@@ -44,15 +47,15 @@ class UnsupervisedNearestNeighbors:
 
 
 if __name__ == "__main__":
-    X = DataLoader().construct()
+    X = DataLoader().construct(drop_zero_users=True)
     knn = UnsupervisedNearestNeighbors(4)
     knn.fit(X)
-    # sample = X.iloc[0]     # first row as sample
-    # sample_pred = knn.predict_single(sample)
-    # print("Original sample:", sample)
-    # print("Predicted sample:", sample_pred)
-    samples = X.iloc[:2]
-    samples_pred = knn.predict(samples)
-    print(samples_pred)
+    sample = X.iloc[0]     # first row as sample
+    sample_pred = knn.predict(sample)
+    print("Original sample:", sample)
+    print("Predicted sample:", sample_pred)
+    # samples = X.iloc[:2]
+    # samples_pred = knn.predict(samples)
+    # print(samples_pred)
 
 
