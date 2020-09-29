@@ -34,8 +34,9 @@ class UserRating:
 
 
 if __name__ == "__main__":
-    X = DataLoader().construct(drop_zero_users=True)
-    all_movie_ids = X.columns
+    loader = DataLoader()
+    X = loader.construct(drop_zero_users=True)
+    all_movie_ids = loader.load_movies_with_rating_threshold()
     user_rating = UserRating(all_movie_ids)
     user_rating.add_rating(1, 5)
     user_rating.add_rating(2, 5)
