@@ -19,6 +19,7 @@ class UserRating:
             raise RuntimeError("Rated movie was unknown")
         if rating not in range(1, 6):
             raise RuntimeError("Rating must be a number 1-5")
+        print(movie_id, rating) # TODO remove
         self.rated_movie_ids.append(movie_id)
         self.ratings.append(rating)
 

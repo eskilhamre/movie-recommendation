@@ -1,10 +1,7 @@
 from scipy import spatial
-#from data_load import DataLoader
-import numpy as np
 
 MAX = 1.0
 MIN = -1.0
-lol = 1
 
 
 def cosine_similarities(sample, df):
