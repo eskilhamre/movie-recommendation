@@ -1,6 +1,6 @@
 import numpy as np
-from data_load import DataLoader
-from kNN import UnsupervisedNearestNeighbors
+from data_processing.data_load import DataLoader
+from model.kNN import UnsupervisedNearestNeighbors
 from sklearn.model_selection import train_test_split
 from time import time
 

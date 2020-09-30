@@ -1,7 +1,7 @@
 import pandas as pd
-from data_load import DataLoader
-from kNN import UnsupervisedNearestNeighbors
-import config
+from data_processing.data_load import DataLoader
+from model.kNN import UnsupervisedNearestNeighbors
+from config import config
 
 
 class MovieRecommender:
@@ -14,7 +14,6 @@ class MovieRecommender:
         """
 
         :param user_ratings: pd series or np array of standard normalized user ratings
-        :param alg:
         :param n_recommendations: number of movies to recommend
         :return:
         """
@@ -42,8 +41,9 @@ if __name__ == "__main__":
     loader = DataLoader()
     X = loader.construct(drop_zero_users=True)
     my_user_rating = X.iloc[50]
-    print(my_user_rating.sort_values(ascending=False).head(20), end="\n\n")
     recommender = MovieRecommender(loader)
     recommendation = recommender.recommend(my_user_rating, n_recommendations=10)
-    print(recommendation)
+    #print(recommendation)
+    for i, (title, score) in recommendation.iterrows():
+        print(i, title, score)
 

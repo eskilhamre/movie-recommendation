@@ -5,3 +5,4 @@ https://www.youtube.com/watch?v=3ecNC-So0r4
 https://medium.com/sfu-cspmp/recommendation-systems-user-based-collaborative-filtering-using-n-nearest-neighbors-bf7361dc24e0 # user based collaborative filtering guide
 https://realpython.com/python-gui-tkinter/
 http://www.pyinstaller.org/
+https://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter

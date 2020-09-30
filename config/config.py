@@ -13,4 +13,7 @@ n_ratings_threshold = 10
 
 # how many movies the client may rate at maximum before recommendation calculation starts
 # also, the movies chosen for rating is the {num_of_movies_for_client} most rated ones.
-num_of_movies_for_client = 10
+num_of_movies_for_client = 50
+
+# number of movies to recommend the client in the end
+num_of_recommendations_for_client = 30

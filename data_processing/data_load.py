@@ -1,14 +1,14 @@
 import pandas as pd
-from data_ops import standardize
+from data_processing.data_ops import standardize
 from sklearn.preprocessing import normalize
 from sklearn.utils import shuffle as sklearn_shuffle
-import config
+from config import config
 
 
 class DataLoader:
 
     def __init__(self):
-        self.rel_data_path = "data-small/"
+        self.rel_data_path = "../data-small/"
         self.n_ratings_threshold = 10  # threshold #ratings a movie must have to be included
 
     def construct(self, normalize_rows=False, drop_zero_users=False):
