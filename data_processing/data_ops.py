@@ -16,7 +16,7 @@ def cosine_similarities(sample, df):
     """
     if (sample == 0).all():
         # our sample is a zero vector, and is similar only to zero rows (if any)
-        similar_score = df.apply(lambda row : MAX if (row == 0).all() else MIN)
+        similar_score = df.apply(lambda row : MAX if (row == 0).all() else MIN, axis=1)
     else:
         similar_score = df.apply(lambda row : MAX - spatial.distance.cosine(sample, row), axis=1)
     return similar_score.sort_values(ascending=False, na_position="last")

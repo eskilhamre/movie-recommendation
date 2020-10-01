@@ -1,4 +1,4 @@
-from ui.ui import MovieRaterApp
+from ui.ui_main import MovieRaterApp
 
 if __name__ == "__main__":
     app = MovieRaterApp()

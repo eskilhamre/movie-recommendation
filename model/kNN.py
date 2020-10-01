@@ -1,7 +1,6 @@
 from data_processing.data_ops import cosine_similarities
 import numpy as np
 from data_processing.data_load import DataLoader
-import pandas as pd
 
 
 class UnsupervisedNearestNeighbors:
@@ -15,7 +14,6 @@ class UnsupervisedNearestNeighbors:
         TODO write
 
         :param X: pandas df
-        :return:
         """
         self.X = X
 
@@ -40,17 +38,18 @@ class UnsupervisedNearestNeighbors:
         """
         total_similar_score = cosine_similarities(sample, self.X)
         k_similar_score = total_similar_score.iloc[:self.k_neighbors]  # k best similarities scores
-        print(k_similar_score.index)
         X_alike = self.X.loc[k_similar_score.index]                    # k most similar training samples
         weighted_average = (X_alike.T.dot(k_similar_score)).T / np.sum(k_similar_score)
         return weighted_average.to_numpy()
 
 
 if __name__ == "__main__":
+    k = 4
     X = DataLoader().construct(drop_zero_users=True)
-    knn = UnsupervisedNearestNeighbors(4)
+    knn = UnsupervisedNearestNeighbors(k_neighbors=k)
     knn.fit(X)
-    sample = X.iloc[0]     # first row as sample
+    #sample = X.iloc[0]     # first row as sample
+    sample = np.zeros(X.shape[1])
     sample_pred = knn.predict(sample)
     print("Original sample:", sample)
     print("Predicted sample:", sample_pred)

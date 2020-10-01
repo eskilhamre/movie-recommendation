@@ -1,68 +1,16 @@
 import tkinter as tk
+from logic_ui_interface import interface as logic
 from config import config
-from data_processing.data_load import DataLoader
-from recommendation.recommend_movies import MovieRecommender
-from data_processing.user_rating import UserRatingHandler
 
-# all logic we need to connect the recommender algorithm to the UI
-loader = DataLoader()
-recommender = MovieRecommender(loader)
-user_rating_handler = UserRatingHandler(loader.load_movies_with_rating_threshold())
-movies_to_be_rated = loader.load_most_rated_movies(config.num_of_movies_for_client, shuffle=True)
-
-
-def get_recommendation_results():
-    client_ratings = user_rating_handler.get_processed_ratings()
-    return recommender.recommend(client_ratings, n_recommendations=config.num_of_recommendations_for_client)
-
-
-# fonts and themes
+# fonts and color themes
 main_message_font = ("Courier", 38)
 button_font = ("Courier", 30)
 movies_font = ("Courier", 12)
-
-
-class MovieRaterApp(tk.Tk):
-    """
-    this tkinter code structure is heavily inspired by Bryan Oakley's answer on
-    https://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
-    """
-
-    def __init__(self, *args, **kvargs):
-        tk.Tk.__init__(self, *args, **kvargs)
-        self.title("Movie recommendation")
-        frame_classes = (RatePage, RecommendPage)  # all the page classes
-        first_page_name = RatePage.__name__  # name of first page to be shown in UI
-
-        # the container is the stack of frames. The one we want visible is raised above the others
-        container = tk.Frame(master=self)
-        container.pack(side="top", fill="both", expand=True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
-
-        self.frames = dict()  # key: frame name, val: frame instance
-        for FrameClass in frame_classes:
-            page_name = FrameClass.__name__
-            frame_instance = FrameClass(parent=container, controller=self)
-            self.frames[page_name] = frame_instance
-
-            # put all of the pages in the same location; only one will be visible
-            frame_instance.grid(row=0, column=0, sticky="nsew")
-
-        self.show_frame(first_page_name)
-
-    def show_frame(self, page_name):
-        """
-        Show the frame corresponding to the page name
-        """
-        frame = self.frames[page_name]
-        frame.tkraise()
-
-    def init_recommendation(self):
-        recommender_page_name = RecommendPage.__name__
-        recommender_page = self.frames[recommender_page_name]
-        recommender_page.show_recommendations()
-        self.show_frame(recommender_page_name)
+clr_bright = "#FEF9E0"
+clr_light_green = "#94D5C0"
+clr_dark_green = "#56796F"
+clr_light_blue = "#36AAB4"
+clr_dark_blue = "#1D5980"
 
 
 class RatePage(tk.Frame):
@@ -72,57 +20,59 @@ class RatePage(tk.Frame):
         self.controller = controller
 
         self.i_current_movie = 0
-        self.current_movie = movies_to_be_rated.iloc[self.i_current_movie]
+        self.current_movie = logic.movies_to_be_rated.iloc[self.i_current_movie]
+
+        self.frm_left = tk.Frame(master=self, bg=clr_dark_blue, padx=50, pady=20)
+        self.frm_left.pack(side="left", fill=tk.BOTH, expand=True)
+        self.frm_left.rowconfigure([0, 1], weight=1, minsize=250)
+
+        self.frm_right = tk.Frame(master=self, bg=clr_bright, padx=50, pady=20)
+        self.frm_right.pack(side="right", fill=tk.BOTH, expand=True)
 
         # label for movie names
-        self.lbl_movie_title = tk.Label(master=self, text=self.current_movie["title"], width=30, height=5,
-                                        bg="green", fg="white",
+        self.lbl_movie_title = tk.Label(master=self.frm_left, text=self.current_movie["title"],
+                                        width=10, height=2,
+                                        bg=clr_dark_blue, fg=clr_bright,
                                         font=main_message_font)
-        self.lbl_movie_title.pack(fill=tk.BOTH, expand=True)
+        self.lbl_movie_title.grid(row=0, column=0, sticky="nsew")
 
-        # bottom frame
-        self.frm_bottom = tk.Frame(master=self, bg="white")
-        self.frm_bottom.pack(fill=tk.BOTH)
-
-        # bottom left frame
-        self.frm_bottom_left = tk.Frame(master=self.frm_bottom, bg="blue", padx=50, pady=20)
-        self.frm_bottom_left.grid(row=0, column=0, sticky="nsew")
-        self.frm_bottom_left.rowconfigure(0, weight=1)
-        self.frm_bottom_left.columnconfigure([0, 1, 2, 3, 4], minsize=100, weight=1)
+        # frame that contains rate buttons
+        self.frm_rate_buttons = tk.Frame(master=self.frm_left, bg=clr_dark_blue, padx=0, pady=50)
+        self.frm_rate_buttons.grid(row=1, column=0, sticky="nsew")
+        self.frm_rate_buttons.rowconfigure(0, weight=1)
+        self.frm_rate_buttons.columnconfigure([0, 1, 2, 3, 4], minsize=150, weight=1)
 
         # rating buttons
         self.buttons = set()
         for i in range(5):
-            button = tk.Button(master=self.frm_bottom_left,
+            button = tk.Button(master=self.frm_rate_buttons,
                                text=str(i + 1),
-                               bg="yellow", fg="blue",
+                               bg=clr_light_green, fg=clr_dark_blue,
                                font=button_font,
                                command=(lambda j=i + 1: self.handle_new_movie(rating=j))
                                )
-            button.grid(row=0, column=i, sticky="nsew", padx=10, pady=30)
+            button.grid(row=0, column=i, sticky="nsew", padx=15, pady=10)
             self.buttons.add(button)
 
-        # bottom right frame
-        self.frm_bottom_right = tk.Frame(master=self.frm_bottom, bg="red")
-        self.frm_bottom_right.grid(row=0, column=1, sticky="nsew")
-
         # skip button
-        self.btn_skip = tk.Button(master=self.frm_bottom_right,
+        self.btn_skip = tk.Button(master=self.frm_right,
                                   text="Skip\nMovie",
-                                  bg="yellow", fg="red",
+                                  bg=clr_light_green, fg=clr_bright,
                                   font=button_font,
                                   command=(lambda: self.handle_new_movie(skip_current=True))
                                   )
-        self.btn_skip.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
+        self.btn_skip.pack(side="bottom", fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.buttons.add(self.btn_skip)
 
         # recommend button
-        self.btn_recommend = tk.Button(master=self.frm_bottom_right,
-                                       text="Get\nRecommendation",
-                                       bg="yellow", fg="red",
+        self.btn_recommend = tk.Button(master=self.frm_right,
+                                       text="Give me\nRecommendations",
+                                       bg=clr_light_green, fg=clr_bright,
                                        font=button_font,
                                        command=self.controller.init_recommendation
                                        )
-        self.btn_recommend.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        self.btn_recommend.pack(side="bottom", fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.buttons.add(self.btn_recommend)
 
     def handle_new_movie(self, rating=-1, skip_current=False):
         """
@@ -133,12 +83,12 @@ class RatePage(tk.Frame):
         and thus the rating is registered. The rating parameter should then be a value
         (1-5)
 
-        If, however, skip_current flag is set to false, it only brings the next movie to the screen, ignoring
+        If, however, skip_current flag is set to False, it only brings the next movie to the screen, ignoring
         the rating parameter.
         """
         if not skip_current:
             # register rating
-            user_rating_handler.add_rating(self.current_movie.name, rating)
+            logic.user_rating_handler.add_rating(self.current_movie.name, rating)
 
         self.i_current_movie += 1
         # if all movies has been rated, recommendation should now begin
@@ -146,8 +96,12 @@ class RatePage(tk.Frame):
             self.controller.init_recommendation()
         else:
             # show next movie
-            self.current_movie = movies_to_be_rated.iloc[self.i_current_movie]
+            self.current_movie = logic.movies_to_be_rated.iloc[self.i_current_movie]
             self.lbl_movie_title["text"] = self.current_movie["title"]
+
+    def disable_buttons(self):
+        for button in self.buttons:
+            button["state"] = "disable"
 
 
 class RecommendPage(tk.Frame):
@@ -159,7 +113,7 @@ class RecommendPage(tk.Frame):
         self.lbl_recommended_message = tk.Label(master=self,
                                                 text="Based on your ratings, I would\nrecommend the following movies:",
                                                 width=30, height=5,
-                                                bg="green", fg="white",
+                                                bg=clr_dark_blue, fg=clr_bright,
                                                 font=main_message_font
                                                 )
         self.lbl_recommended_message.pack(fill=tk.BOTH, expand=True)
@@ -167,7 +121,7 @@ class RecommendPage(tk.Frame):
         self.frm_scroll_movies.pack(fill=tk.BOTH, expand=True)
 
     def show_recommendations(self):
-        recommendations = get_recommendation_results()
+        recommendations = logic.get_recommendation_results()
         self.frm_scroll_movies.populate(recommendations)
 
 
@@ -177,8 +131,11 @@ class ScrollableMovieFrame(tk.Frame):
 
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        self.canvas = tk.Canvas(self, borderwidth=0, background="#ffffff")
-        self.frame = tk.Frame(self.canvas, background="#ffffff")
+        self.bg_color = clr_dark_blue
+        self.fg_color = clr_bright
+
+        self.canvas = tk.Canvas(self, borderwidth=0, background=self.bg_color)
+        self.frame = tk.Frame(self.canvas, background=self.bg_color)
         self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.vsb.set)
 
@@ -195,21 +152,21 @@ class ScrollableMovieFrame(tk.Frame):
                  width=3, borderwidth="1",
                  relief="solid",
                  font=movies_font,
-                 bg="green", fg="white"
+                 bg=self.bg_color, fg=self.fg_color
                  ).grid(row=0, column=0)
         tk.Label(self.frame,
                  text="Movie Name",
                  width=60, borderwidth="1",
                  relief="solid",
                  font=movies_font,
-                 bg="green", fg="white"
+                 bg=self.bg_color, fg=self.fg_color
                  ).grid(row=0, column=1)
         tk.Label(self.frame,
-                 text="Relative Score",
+                 text="Recommendation Score",
                  width=20, borderwidth="1",
                  relief="solid",
                  font=movies_font,
-                 bg="green", fg="white"
+                 bg=self.bg_color, fg=self.fg_color
                  ).grid(row=0, column=2)
 
     def on_frame_configure(self, event):
@@ -225,27 +182,22 @@ class ScrollableMovieFrame(tk.Frame):
                               text=str(i),
                               width=3, borderwidth="5",
                               font=movies_font,
-                              bg="green", fg="white"
+                              bg=self.bg_color, fg=self.fg_color
                               )
             lbl_nr.grid(row=i, column=0)
 
             lbl_movie_name = tk.Label(self.frame,
                                       text=title,
                                       font=movies_font,
-                                      bg="green", fg="white"
+                                      bg=self.bg_color, fg=self.fg_color
                                       )
             lbl_movie_name.grid(row=i, column=1)
 
             lbl_score = tk.Label(self.frame,
-                                 text=str(score),
+                                 text=str(score)[:5],
                                  font=movies_font,
-                                 bg="green", fg="white"
+                                 bg=self.bg_color, fg=self.fg_color
                                  )
             lbl_score.grid(row=i, column=2)
 
             i += 1
-
-
-if __name__ == "__main__":
-    app = MovieRaterApp()  # root
-    app.mainloop()
