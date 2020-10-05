@@ -10,8 +10,9 @@ Make sure you have Python installed on your computer, along with an IDE that sup
 Also, you need to have installed the following Python libraries: Pandas, Numpy, Scipy, Sklearn and Tkinter.
 
 ## How to run the program
-Simply run the main/main.py file. You might need to change the working directory into the main/ folder.
-Running the program from the terminal is *not* supported yet.
+First add the src/ folder to your PYTHONPATH. Then you can run the program from the
+- *terminal*: Make sure your current directory is src/. Then type *python main.py*
+- *IDE*: Open the project with src/ as root folder. Then run *main.py*
 
 ## Usage
 The client is asked to rate (or skip) several movies on the scale 1-5. At any point the client may end the rating phase (by the clicking the 
