@@ -1,5 +1,5 @@
-from data_processing.data_ops import cosine_similarities
 import numpy as np
+from data_processing.data_ops import cosine_similarities
 from data_processing.data_load import DataLoader
 
 

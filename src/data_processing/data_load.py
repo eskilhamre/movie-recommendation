@@ -8,7 +8,7 @@ from config import config
 class DataLoader:
 
     def __init__(self):
-        self.rel_data_path = "../data-small/"
+        self.rel_data_path = "data-small/"
         self.n_ratings_threshold = 10  # threshold #ratings a movie must have to be included
 
     def construct(self, normalize_rows=False, drop_zero_users=False):

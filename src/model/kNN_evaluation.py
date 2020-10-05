@@ -1,8 +1,9 @@
 import numpy as np
-from data_processing.data_load import DataLoader
-from model.kNN import UnsupervisedNearestNeighbors
-from sklearn.model_selection import train_test_split
 from time import time
+from data_processing.data_load import DataLoader
+from model import UnsupervisedNearestNeighbors
+from sklearn.model_selection import train_test_split
+
 
 k = 15      # arbitrary choice for now
 X = DataLoader().construct(drop_zero_users=True)
